@@ -20,7 +20,7 @@ pipeline {
                     sudo docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
                     sudo docker image ls | grep ${DOCKER_IMAGE}'''
                withCredentials([
-                    awsCredentials(credentialsId: 'aws-access-keys')
+                    awsCredentials(credentialsId: 'aws-access-keys', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
                         sh "aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO"
                        
