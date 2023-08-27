@@ -24,7 +24,7 @@ pipeline {
                         string(credentialsId: 'aws-access-keys', variable: 'AWS_SECRET_ACCESS_KEY')
                     ]) {
                         //sh "aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO"
-                        sh "eval $(aws ecr get-login-password --region $AWS_DEFAULT_REGION --no-include-email)"
+                        sh "eval (aws ecr get-login-password --region $AWS_DEFAULT_REGION --no-include-email)"
 
                         sh "docker tag $ECR_REPO/${DOCKER_IMAGE}:latest"
                         sh "docker push $ECR_REPO/${DOCKER_IMAGE}:latest"
