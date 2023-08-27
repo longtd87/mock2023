@@ -19,8 +19,8 @@ pipeline {
                 
 
                 //clean to save disk
-                sh "sudo docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                sh "sudo docker image rm ${DOCKER_IMAGE}:latest"
+                //sh "sudo docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                //sh "sudo docker image rm ${DOCKER_IMAGE}:latest"
             }
         }
        /* stage("Deploy"){
