@@ -4,6 +4,7 @@ pipeline {
         DOCKER_IMAGE = "longtd27/nginx"
         AWS_DEFAULT_REGION = "us-east-1"  // E.g., us-east-1
         ECR_REPO = "test"
+        AWS_CREDENTIALS = credentials('aws-access-keys')
     }
     stages {
         stage("Build"){
