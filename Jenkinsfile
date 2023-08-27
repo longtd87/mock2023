@@ -22,7 +22,7 @@ pipeline {
                     sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REPO"
                     sudo docker tag $ECR_REPO/${DOCKER_IMAGE}:latest"
                     sudo docker push $ECR_REPO/${DOCKER_IMAGE}:latest'''
-                    }
+                    
                 //clean to save disk
                 //sh "sudo docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 //sh "sudo docker image rm ${DOCKER_IMAGE}:latest"
