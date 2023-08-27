@@ -13,14 +13,14 @@ pipeline {
             }
             steps {
                 sh '''
-                    docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . 
-                    docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
-                    docker image ls | grep ${DOCKER_IMAGE}'''
+                    sudo docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . 
+                    sudo docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest
+                    sudo docker image ls | grep ${DOCKER_IMAGE}'''
                 
 
                 //clean to save disk
-                sh "docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                sh "docker image rm ${DOCKER_IMAGE}:latest"
+                sh "sudo docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                sh "sudo docker image rm ${DOCKER_IMAGE}:latest"
             }
         }
        /* stage("Deploy"){
