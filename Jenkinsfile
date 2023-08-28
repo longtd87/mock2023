@@ -27,6 +27,21 @@ pipeline {
                 
             }     
  
+        stage("Approve") {
+            steps {
+                input(id: 'auditorApproval', message: 'Auditor approval required. Type "APPROVE" to continue:') {
+                    script {
+                        def userInput = inputParameters['auditorApproval']
+                        if (userInput == 'APPROVE') {
+                            echo 'Auditor approved. Continuing with the pipeline...'
+                        } else {
+                            error 'Auditor did not approve. Pipeline aborted.'
+                        }
+                    }
+                }
+            }
+        }
+
         stage("Push Image to ECR"){
             options {
                 timeout(time: 10, unit: 'MINUTES')
