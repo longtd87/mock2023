@@ -19,8 +19,8 @@ pipeline {
             }
             steps {
                 script {
-                       def awsAccessKeyId = credentials('AWS_ACCESS_KEY_ID')
-                       def awsSecretAccessKey = credentials('AWS_SECRET_ACCESS_KEY')
+                       awsAccessKeyId = credentials('AWS_ACCESS_KEY_ID')
+                       awsSecretAccessKey = credentials('AWS_SECRET_ACCESS_KEY')
         
                        
                        sh '''
