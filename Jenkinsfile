@@ -10,6 +10,13 @@ pipeline {
         
     }
     stages {
+        stage("Auditor Approval") {
+            steps {
+                input(id: 'auditorApproval', message: 'Auditor approval required. Approve to continue.') {
+                    // This block will execute after the auditor approves
+                    echo 'Auditor approved. Continuing with the pipeline...'
+                }
+            }
         stage("Build and Push image to ECR"){
             options {
                 timeout(time: 10, unit: 'MINUTES')
