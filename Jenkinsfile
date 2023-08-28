@@ -17,6 +17,7 @@ pipeline {
                     echo 'Auditor approved. Continuing with the pipeline...'
                 }
             }
+        }
         stage("Build and Push image to ECR"){
             options {
                 timeout(time: 10, unit: 'MINUTES')
