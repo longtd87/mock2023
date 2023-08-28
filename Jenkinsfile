@@ -3,7 +3,7 @@ pipeline {
     environment{
         DOCKER_IMAGE = "longtd27/nginx"
         AWS_DEFAULT_REGION = "us-east-1"  // E.g., us-east-1
-        ECR_REPO = "test"
+        ECR_REPO = "541253215789.dkr.ecr.us-east-1.amazonaws.com"
         
     }
     stages {
