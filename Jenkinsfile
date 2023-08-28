@@ -26,7 +26,7 @@ pipeline {
                     aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
                     aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URL
                     docker push ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest'''
-                }
+                
                 //clean to save disk
                 sh "docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 sh "docker image rm ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest"
