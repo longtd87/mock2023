@@ -32,7 +32,7 @@ pipeline {
                 script {
                     emailext (
                             subject: 'In Stage Approve',
-                            body: ' PLEASE checkout $BUILD_URL to APPROVE PIPELINE TO CONTINUE', 
+                            body: ' PLEASE CHECKOUT PIPELINE $JOB_NAME $BUILD_URL TO APPROVE THIS PIPELINE TO CONTINUE', 
                             to: 'longtd99@gmail.com',
                             from: 'web.secc@gmail.com'
                     )
