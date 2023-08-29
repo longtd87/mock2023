@@ -7,7 +7,7 @@ pipeline {
         ECR_REPO = "longtd27-mock"
         //AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         //AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        
+        DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
     }
     stages {
         stage("Build Image"){
@@ -15,7 +15,7 @@ pipeline {
                 timeout(time: 10, unit: 'MINUTES')
             }
             environment {
-                DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
+                //DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
             }
             steps {                     
                     sh '''
@@ -65,9 +65,9 @@ pipeline {
                         '''
                         }                              
                 //clean to save disk
-                //sh "docker image rm ${DOCKER_IMAGE}:${env.DOCKER_TAG}"
-                //sh "docker image rm ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest"
-                sh "docker rmi -f ${docker images -aq}"
+                sh "docker image rm ${DOCKER_IMAGE}:${env.DOCKER_TAG}"
+                sh "docker image rm ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest"
+                
             }
         }     
     }
