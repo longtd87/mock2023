@@ -66,7 +66,8 @@ pipeline {
                         }                              
                 //clean to save disk
                 //sh "docker image rm ${DOCKER_IMAGE}:${env.DOCKER_TAG}"
-                sh "docker image rm ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest"
+                //sh "docker image rm ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest"
+                sh "docker rmi -f $(docker images -aq)"
             }
         }     
     }
