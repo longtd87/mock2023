@@ -18,14 +18,31 @@ pipeline {
                 //DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
             }*/
             steps {                     
-                    sh '''
-                        docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . 
-                        docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest
-                        docker image ls | grep ${DOCKER_IMAGE}              
-                    '''
+                    withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws_credentails_key',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                            ansiblePlaybook(
+                                credentialsId: 'private_key',
+                                playbook: 'playbook.yml',
+                               //inventory: 'hosts',
+                                become: 'yes',
+                                extraVars: [
+                                     AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}",  
+                                     AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}", 
+                                     DOCKER_IMAGE: "${DOCKER_IMAGE }",
+                                     AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }",
+                                     ECR_URL: "${ECR_URL }",
+                                     ECR_REPO: "${ECR_REPO}",
+                                     DOCKER_TAG: "${DOCKER_TAG}"
+                                ]
+                            )
                     }               
                 
-            }     
+            }
+        }     
  
         stage("Approve") {
             steps {
@@ -52,36 +69,9 @@ pipeline {
             }
         }
 
-        stage("Push Image to ECR"){
-            options {
-                timeout(time: 10, unit: 'MINUTES')
-            }
-            steps {    
-                    
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws_credentails_key',
-                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                ]]) {
-                        sh '''           
-                            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-                            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-                            aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URL
-                            docker push ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest
-                        '''
-                        }                              
-                //clean to save disk
-                sh "docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
-                sh "docker image rm ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest"
+        
                 
-            }
-        }     
-    }
-
-
-
-
+            
 
     post {
         success {

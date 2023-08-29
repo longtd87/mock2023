@@ -1,7 +1,5 @@
 ---
-- hosts: server
-  remote_user: ubuntu
-  become: yes
+- hosts: localhost
   tasks:
     - name: Update apt
       shell: sudo apt update
@@ -11,15 +9,40 @@
           - docker
           - docker-compose
         state: present
-    - name: Login DockerHub
-      shell: docker login -u "{{DOCKER_USERNAME}}" -p "{{DOCKER_PASSWORD}}"
+    
+    - name: Configure AWS ACCESS KEY ID
+      shell: aws configure set aws_access_key_id "{{AWS_ACCESS_KEY_ID}}"
+
+    - name: Configure AWS SECRET ACCESS KEY 
+      shell: aws configure set aws_secret_access_key "{{AWS_SECRET_ACCESS_KEY}}"
+      
+    - name: Get AWS ECR Login Command
+      shell: aws ecr get-login-password --region "{{ AWS_DEFAULT_REGION }}"
+      register: ecr_login_command
+
+    - name: Log in to AWS ECR
+      shell: "{{ ecr_login_command.stdout }}"
+
     - name: Copy file
       copy:
-        src: docker-compose.yaml
+        src: Dockerfile
         dest: /home/ubuntu/
-    - name: Restart docker-compose
-      shell: |
-          docker-compose stop
-          docker-compose rm -f
-          docker-compose pull
-          docker-compose up -d
+
+    - name: Build Docker Image
+      command: docker build -t  "{{DOCKER_IMAGE}}":"{{DOCKER_TAG}}"" /home/ubuntu/
+
+    - name: Tag Docker Image
+      command:  docker tag "{{DOCKER_IMAGE}}":"{{DOCKER_TAG}}" "{{ECR_URL}}"/"{{ECR_REPO}}":"{{DOCKER_IMAGE}}"_latest
+
+    - name: Push Docker Image to ECR
+      command: docker push "{{ECR_URL}}"/"{{ECR_REPO}}":"{{DOCKER_IMAGE}}"_latest
+
+    - name: Remove Docker Image Origin
+      command: docker image rm "{{DOCKER_IMAGE}}":"{{DOCKER_TAG}}"
+    
+    - name: Remove Docker Image ECR
+      command: docker image rm "{{ECR_URL}}"/"{{ECR_REPO}}":"{{DOCKER_IMAGE}}"_latest
+                
+
+
+    
