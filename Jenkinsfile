@@ -14,9 +14,9 @@ pipeline {
             options {
                 timeout(time: 10, unit: 'MINUTES')
             }
-            environment {
+            /*environment {
                 //DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
-            }
+            }*/
             steps {                     
                     sh '''
                         docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . 
