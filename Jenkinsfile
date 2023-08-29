@@ -31,8 +31,8 @@ pipeline {
             steps {
                 script {
                     emailext (
-                            subject: 'In Stage Approve',
-                            body: ' PLEASE CHECKOUT PIPELINE $JOB_NAME $BUILD_URL TO APPROVE THIS PIPELINE TO CONTINUE', 
+                            subject: 'In Stage APPROVAL pipeline $JOB_NAME ',
+                            body: ' Please checkout the pipeline $JOB_NAME $BUILD_URL TO APPROVE', 
                             to: 'longtd99@gmail.com',
                             from: 'web.secc@gmail.com'
                     )
