@@ -30,18 +30,18 @@ pipeline {
         stage("Approve") {
             steps {
                 script {
+                    emailext (
+                            subject: 'In Stage Approve',
+                            body: ' PLEASE checkout $BUILD_URL to APPROVE PIPELINE TO CONTINUE' 
+                            //recipientProviders: [[$class: 'CulpritsRecipientProvider']],
+                            to: 'longtd99@gmail.com',
+                            from: 'web.secc@gmail.com'
+                        )
                     def userInput = input(
                         id: 'auditorApproval',
                         message: 'Auditor approval required. Type "APPROVE" to continue:',
                         parameters: [string(name: 'userInput', defaultValue: '', description: '')]
                     )
-                    emailext (
-                            subject: 'In Stage Approve',
-                            body: ' PLEASE checkout $BUILD_URL to APPROVE PIPELINE TO CONTINUE' 
-                            recipientProviders: [[$class: 'CulpritsRecipientProvider']],
-                            to: 'longtd99@gmail.com',
-                            from: 'web.secc@gmail.com'
-                        )
                     if (userInput == 'APPROVE') {
                         echo 'Auditor approved. Continuing with the pipeline...'
                     } else {
