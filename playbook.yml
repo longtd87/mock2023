@@ -1,15 +1,6 @@
 ---
 - hosts: localhost
-  tasks:
-    - name: Update apt
-      shell: sudo apt update
-    - name: Install Docker
-      apt:
-        name:
-          - docker
-          - docker-compose
-        state: present
-    
+  tasks:   
     - name: Configure AWS ACCESS KEY ID
       shell: aws configure set aws_access_key_id "{{AWS_ACCESS_KEY_ID}}"
 
@@ -29,19 +20,19 @@
         dest: /home/ubuntu/
 
     - name: Build Docker Image
-      command: docker build -t  "{{DOCKER_IMAGE}}":"{{DOCKER_TAG}}"" /home/ubuntu/
+      command: docker build -t  {{DOCKER_IMAGE}}:{{DOCKER_TAG}} /home/ubuntu/
 
     - name: Tag Docker Image
-      command:  docker tag "{{DOCKER_IMAGE}}":"{{DOCKER_TAG}}" "{{ECR_URL}}"/"{{ECR_REPO}}":"{{DOCKER_IMAGE}}"_latest
+      command:  docker tag {{DOCKER_IMAGE}}:{{DOCKER_TAG}} {{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest
 
     - name: Push Docker Image to ECR
-      command: docker push "{{ECR_URL}}"/"{{ECR_REPO}}":"{{DOCKER_IMAGE}}"_latest
+      command: docker push {{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest
 
     - name: Remove Docker Image Origin
-      command: docker image rm "{{DOCKER_IMAGE}}":"{{DOCKER_TAG}}"
+      command: docker image rm {{DOCKER_IMAGE}}:{{DOCKER_TAG}}
     
     - name: Remove Docker Image ECR
-      command: docker image rm "{{ECR_URL}}"/"{{ECR_REPO}}":"{{DOCKER_IMAGE}}"_latest
+      command: docker image rm {{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest
                 
 
 
