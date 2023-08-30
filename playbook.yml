@@ -1,5 +1,6 @@
 ---
 - hosts: localhost
+  user: ubuntu
   tasks:   
     - name: Configure AWS ACCESS KEY ID
       shell: aws configure set aws_access_key_id "{{AWS_ACCESS_KEY_ID}}"
