@@ -1,5 +1,5 @@
 ---
-- hosts: ansibledeploy
+- hosts: 192.168.1.16
   
   tasks:   
     - name: Configure AWS ACCESS KEY ID
