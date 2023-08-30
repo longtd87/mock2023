@@ -17,7 +17,7 @@
     - name: Copy Dockerfile
       copy:
         src: Dockerfile
-        dest: /home/ubuntu/docker_run/Dockerfile  # Ensure the destination includes the filename
+        dest: /home/ubuntu/  # Ensure the destination includes the filename
         
     - name: Build Docker Image
       command: docker build -t "{{DOCKER_IMAGE}}:{{DOCKER_TAG}}" /home/ubuntu/docker_run
