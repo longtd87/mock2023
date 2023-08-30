@@ -6,67 +6,10 @@ pipeline {
         ECR_URL = "541253215789.dkr.ecr.us-east-1.amazonaws.com"
         ECR_REPO = "longtd27-mock"
         DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
-        BRANCH_GIT = "${GIT_BRANCH.tokenize('/').pop()}"
+        
     }
-    stages {
-        stage("Build Image"){
-            options {
-                timeout(time: 5, unit: 'MINUTES')
-            }
-            
-            steps {                     
-                    withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws_credentails_key',
-                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]]) {
-                            ansiblePlaybook(
-                                credentialsId: 'private_key',
-                                playbook: 'playbook_build.yml',
-                                inventory: 'hosts',
-                                become: 'yes',
-                                extraVars: [
-                                     DOCKER_IMAGE: "${DOCKER_IMAGE }",
-                                     ECR_URL: "${ECR_URL }",
-                                     ECR_REPO: "${ECR_REPO}",
-                                     DOCKER_TAG: "${DOCKER_TAG}"
-                                ]
-                            )
-                    }               
-                
-            }
-        }     
- 
-        stage("Approve") {
-            steps {
-                script {
-                    if (BRANCH_GIT == "main") {
-                        def userInput = input(
-                        id: 'auditorApproval',
-                        message: 'Auditor approval required. Type "APPROVE" to continue:',
-                        parameters: [string(name: 'userInput', defaultValue: '', description: '')]
-                    )
-                    if (userInput == 'APPROVE') {
-                        echo 'Auditor approved. Continuing with the pipeline...'
-                    } else {
-                        error 'Auditor did not approve. Pipeline aborted.'
-                    }
-
-                    emailext (
-                            subject: 'In Stage APPROVAL pipeline $JOB_NAME ',
-                            body: ' Please checkout the pipeline $JOB_NAME $BUILD_URL TO APPROVE', 
-                            to: 'longtd99@gmail.com',
-                            from: 'web.secc@gmail.com'
-                    )
-                    }
-                    
-                    
-                }
-            }
-        }
-
-         stage("PUSH IMAGE TO ECR"){
+    stages {     
+        stage("BUILD AND PUSH IMAGE TO ECR"){
             options {
                 timeout(time: 5, unit: 'MINUTES')
             }
@@ -79,7 +22,7 @@ pipeline {
                     ]]) {
                             ansiblePlaybook(
                                 credentialsId: 'private_key',
-                                playbook: 'playbook_push.yml',
+                                playbook: 'playbook.yml',
                                 inventory: 'hosts',
                                 become: 'yes',
                                 extraVars: [
@@ -95,9 +38,7 @@ pipeline {
                     }               
                 
             }
-        }     
-        
-                
+        }                  
             
     }
     post {
