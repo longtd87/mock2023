@@ -24,7 +24,7 @@ pipeline {
                             ansiblePlaybook(
                                 credentialsId: 'private_key',
                                 playbook: 'playbook_build.yml',
-                               //inventory: 'hosts',
+                                inventory: 'hosts',
                                 become: 'yes',
                                 extraVars: [
                                      DOCKER_IMAGE: "${DOCKER_IMAGE }",
@@ -59,7 +59,7 @@ pipeline {
                             to: 'longtd99@gmail.com',
                             from: 'web.secc@gmail.com'
                     )
-                    } 
+                    }
                     
                     
                 }
@@ -80,7 +80,7 @@ pipeline {
                             ansiblePlaybook(
                                 credentialsId: 'private_key',
                                 playbook: 'playbook_push.yml',
-                               //inventory: 'hosts',
+                                inventory: 'hosts',
                                 become: 'yes',
                                 extraVars: [
                                      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}",  
