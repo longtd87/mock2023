@@ -41,24 +41,29 @@ pipeline {
         stage("Approve") {
             steps {
                 script {
+                    
+
                     if (BRANCH_GIT == "main") {
                         def userInput = input(
                         id: 'auditorApproval',
                         message: 'Auditor approval required. Type "APPROVE" to continue:',
                         parameters: [string(name: 'userInput', defaultValue: '', description: '')]
                     )
-                    if (userInput == 'APPROVE') {
-                        echo 'Auditor approved. Continuing with the pipeline...'
-                    } else {
-                        error 'Auditor did not approve. Pipeline aborted.'
-                    }
-
+                    
                     emailext (
                             subject: 'In Stage APPROVAL pipeline $JOB_NAME ',
                             body: ' Please checkout the pipeline $JOB_NAME $BUILD_URL TO APPROVE', 
                             to: 'longtd99@gmail.com',
                             from: 'web.secc@gmail.com'
                     )
+                    
+                    if (userInput == 'APPROVE') {
+                        echo 'Auditor approved. Continuing with the pipeline...'
+                    } else {
+                        error 'Auditor did not approve. Pipeline aborted.'
+                    }
+
+                    
                     }
                     
                     
