@@ -1,35 +1,41 @@
 ---
 - hosts: localhost
-  tasks:
+  tasks:   
     - name: Configure AWS ACCESS KEY ID
       shell: aws configure set aws_access_key_id "{{AWS_ACCESS_KEY_ID}}"
 
     - name: Configure AWS SECRET ACCESS KEY 
       shell: aws configure set aws_secret_access_key "{{AWS_SECRET_ACCESS_KEY}}"
-
+      
     - name: Get AWS ECR Login Command
-      shell: aws ecr get-login-password --region "{{ AWS_DEFAULT_REGION }}"
+      shell: aws ecr get-login-password --region "{{AWS_DEFAULT_REGION }}"
       register: ecr_login_command
 
     - name: Log in to AWS ECR
       shell: "{{ ecr_login_command.stdout }}"
 
-    - name: Copy Dockerfile
+    - name: Copy file
       copy:
         src: Dockerfile
-        dest: /home/ubuntu/  # Ensure the destination includes the filename
+        dest: /home/ubuntu/
+        become: true 
         
+
     - name: Build Docker Image
-      command: docker build -t "{{DOCKER_IMAGE}}:{{DOCKER_TAG}}" /home/ubuntu/docker_run
+      command: docker build -t  "{{DOCKER_IMAGE}}:{{DOCKER_TAG}}" /home/ubuntu/Dockerfile
 
     - name: Tag Docker Image
-      command: docker tag "{{DOCKER_IMAGE}}:{{DOCKER_TAG}}" "{{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest"
+      command:  docker tag "{{DOCKER_IMAGE}}:{{DOCKER_TAG}}" "{{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest"
 
     - name: Push Docker Image to ECR
-      command: docker push "{{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest"
+      command: docker push "{{ECR_URL}}/{{ECR_REPO}}":"{{DOCKER_IMAGE}}_latest"
 
     - name: Remove Docker Image Origin
       command: docker image rm "{{DOCKER_IMAGE}}:{{DOCKER_TAG}}"
-
+    
     - name: Remove Docker Image ECR
-      command: docker image rm "{{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest"
+      command: docker image rm "{{ECR_URL}}/{{ECR_REPO}}":"{{DOCKER_IMAGE}}_latest"
+                
+
+
+    
