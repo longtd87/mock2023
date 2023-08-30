@@ -5,18 +5,14 @@ pipeline {
         AWS_DEFAULT_REGION = "us-east-1" 
         ECR_URL = "541253215789.dkr.ecr.us-east-1.amazonaws.com"
         ECR_REPO = "longtd27-mock"
-        //AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        //AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
         DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
     }
     stages {
         stage("Build Image"){
             options {
-                timeout(time: 10, unit: 'MINUTES')
+                timeout(time: 5, unit: 'MINUTES')
             }
-            /*environment {
-                //DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
-            }*/
+            
             steps {                     
                     withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
@@ -26,14 +22,11 @@ pipeline {
                     ]]) {
                             ansiblePlaybook(
                                 credentialsId: 'private_key',
-                                playbook: 'playbook.yml',
+                                playbook: 'playbook_build.yml',
                                //inventory: 'hosts',
                                 become: 'yes',
                                 extraVars: [
-                                     AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}",  
-                                     AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}", 
                                      DOCKER_IMAGE: "${DOCKER_IMAGE }",
-                                     AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }",
                                      ECR_URL: "${ECR_URL }",
                                      ECR_REPO: "${ECR_REPO}",
                                      DOCKER_TAG: "${DOCKER_TAG}"
@@ -69,6 +62,36 @@ pipeline {
             }
         }
 
+         stage("PUSH IMAGE TO ECR"){
+            options {
+                timeout(time: 5, unit: 'MINUTES')
+            }
+            steps {                     
+                    withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws_credentails_key',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                            ansiblePlaybook(
+                                credentialsId: 'private_key',
+                                playbook: 'playbook_push.yml',
+                               //inventory: 'hosts',
+                                become: 'yes',
+                                extraVars: [
+                                     AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}",  
+                                     AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}", 
+                                     DOCKER_IMAGE: "${DOCKER_IMAGE }",
+                                     AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }",
+                                     ECR_URL: "${ECR_URL }",
+                                     ECR_REPO: "${ECR_REPO}",
+                                     DOCKER_TAG: "${DOCKER_TAG}"
+                                ]
+                            )
+                    }               
+                
+            }
+        }     
         
                 
             
@@ -82,4 +105,3 @@ pipeline {
         }
     }
 }
-
