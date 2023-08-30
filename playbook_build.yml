@@ -1,0 +1,15 @@
+---
+- hosts: localhost
+  user: ubuntu
+  tasks:          
+    - name: Build Docker Image
+      command: sudo docker build -t  "{{DOCKER_IMAGE}}:{{DOCKER_TAG}}" /home/ubuntu/
+
+    - name: Tag Docker Image
+      command:  docker tag "{{DOCKER_IMAGE}}:{{DOCKER_TAG}}" "{{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest"
+   
+   
+                
+
+
+    
