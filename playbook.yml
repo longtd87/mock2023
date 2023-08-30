@@ -14,11 +14,7 @@
     - name: Log in to AWS ECR
       shell: "{{ ecr_login_command.stdout }}"
 
-    - name: Copy file
-      copy:
-        src: Dockerfile
-        dest: /home/ubuntu/
-        become: true 
+    
         
 
     - name: Build Docker Image
