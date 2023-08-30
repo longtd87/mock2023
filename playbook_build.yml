@@ -1,12 +1,15 @@
 ---
-- hosts: localhost
-  
+- hosts: 192.168.1.16
+  become: yes
   tasks:          
     - name: Copy file
       copy:
         src: Dockerfile
         dest: /home/ubuntu/
-        become: true 
+    - name: Copy file
+      copy:
+        src: index.html
+        dest: /home/ubuntu/
 
     - name: Build Docker Image
       command: sudo docker build -t  "{{DOCKER_IMAGE}}:{{DOCKER_TAG}}" /home/ubuntu/
