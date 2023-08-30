@@ -8,11 +8,7 @@
     - name: Configure AWS SECRET ACCESS KEY 
       shell: aws configure set aws_secret_access_key "{{AWS_SECRET_ACCESS_KEY}}"
 
-    - name: Copy file
-      copy:
-        src: Dockerfile
-        dest: /home/ubuntu/
-        become: true 
+    
         
 
     - name: Build Docker Image
