@@ -59,7 +59,7 @@ pipeline {
                             to: 'longtd99@gmail.com',
                             from: 'web.secc@gmail.com'
                     )
-                    } else { echo ${BRANCH_GIT}}
+                    } 
                     
                     
                 }
