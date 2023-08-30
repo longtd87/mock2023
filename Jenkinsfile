@@ -6,7 +6,7 @@ pipeline {
         ECR_URL = "541253215789.dkr.ecr.us-east-1.amazonaws.com"
         ECR_REPO = "longtd27-mock"
         DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
-        BRANCH_GIT = "${GIT_BRANCH.tokenize('/').pop()}"
+        
     }
     stages {
         stage("Build Image"){
@@ -41,20 +41,17 @@ pipeline {
         stage("Approve") {
             steps {
                 script {
-                    
+                    emailext (
+                        subject: 'In Stage APPROVAL pipeline $JOB_NAME ',
+                        body: ' Please checkout the pipeline $JOB_NAME $BUILD_URL TO APPROVE', 
+                        to: 'longtd99@gmail.com',
+                        from: 'web.secc@gmail.com'
+                    )
 
-                    if (BRANCH_GIT == "main") {
-                        def userInput = input(
+                    def userInput = input(
                         id: 'auditorApproval',
                         message: 'Auditor approval required. Type "APPROVE" to continue:',
                         parameters: [string(name: 'userInput', defaultValue: '', description: '')]
-                    )
-                    
-                    emailext (
-                            subject: 'In Stage APPROVAL pipeline $JOB_NAME ',
-                            body: ' Please checkout the pipeline $JOB_NAME $BUILD_URL TO APPROVE', 
-                            to: 'longtd99@gmail.com',
-                            from: 'web.secc@gmail.com'
                     )
                     
                     if (userInput == 'APPROVE') {
@@ -62,11 +59,6 @@ pipeline {
                     } else {
                         error 'Auditor did not approve. Pipeline aborted.'
                     }
-
-                    
-                    }
-                    
-                    
                 }
             }
         }
@@ -100,9 +92,7 @@ pipeline {
                     }               
                 
             }
-        }     
-        
-                
+        }                  
             
     }
     post {
