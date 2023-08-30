@@ -9,7 +9,7 @@
       command: aws configure set aws_secret_access_key "{{AWS_SECRET_ACCESS_KEY}}"
     
     - name: Get AWS ECR Login 
-      command: aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URL
+      shell: aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URL
         
     - name: Push Docker Image to ECR
       command: docker push "{{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest"
