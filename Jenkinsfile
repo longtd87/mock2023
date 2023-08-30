@@ -6,43 +6,37 @@ pipeline {
         ECR_URL = "541253215789.dkr.ecr.us-east-1.amazonaws.com"
         ECR_REPO = "longtd27-mock"
         DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
-        BRANCH_GIT = "${GIT_BRANCH.tokenize('/').pop()}"
     }
     stages {
         stage("Build Image"){
             options {
-                timeout(time: 5, unit: 'MINUTES')
+                timeout(time: 10, unit: 'MINUTES')
             }
-            
+            /*environment {
+                //DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
+            }*/
             steps {                     
-                    withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'aws_credentails_key',
-                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]]) {
-                            ansiblePlaybook(
-                                credentialsId: 'private_key',
-                                playbook: 'playbook_build.yml',
-                                inventory: 'hosts',
-                                become: 'yes',
-                                extraVars: [
-                                     DOCKER_IMAGE: "${DOCKER_IMAGE }",
-                                     ECR_URL: "${ECR_URL }",
-                                     ECR_REPO: "${ECR_REPO}",
-                                     DOCKER_TAG: "${DOCKER_TAG}"
-                                ]
-                            )
+                    sh '''
+                        docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} . 
+                        docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest
+                        docker image ls | grep ${DOCKER_IMAGE}              
+                    '''
                     }               
                 
-            }
-        }     
+            }     
  
         stage("Approve") {
             steps {
                 script {
-                    if (BRANCH_GIT == "main") {
-                        def userInput = input(
+                    emailext (
+                            subject: 'In Stage APPROVAL pipeline $JOB_NAME ',
+                            body: ' Please checkout the pipeline $JOB_NAME $BUILD_URL TO APPROVE', 
+                            to: 'longtd99@gmail.com',
+                            from: 'web.secc@gmail.com'
+                    )
+
+                   
+                    def userInput = input(
                         id: 'auditorApproval',
                         message: 'Auditor approval required. Type "APPROVE" to continue:',
                         parameters: [string(name: 'userInput', defaultValue: '', description: '')]
@@ -52,54 +46,41 @@ pipeline {
                     } else {
                         error 'Auditor did not approve. Pipeline aborted.'
                     }
-
-                    emailext (
-                            subject: 'In Stage APPROVAL pipeline $JOB_NAME ',
-                            body: ' Please checkout the pipeline $JOB_NAME $BUILD_URL TO APPROVE', 
-                            to: 'longtd99@gmail.com',
-                            from: 'web.secc@gmail.com'
-                    )
-                    }
-                    
-                    
                 }
             }
         }
 
-         stage("PUSH IMAGE TO ECR"){
+        stage("Push Image to ECR"){
             options {
-                timeout(time: 5, unit: 'MINUTES')
+                timeout(time: 10, unit: 'MINUTES')
             }
-            steps {                     
-                    withCredentials([[
+            steps {    
+                    
+                withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: 'aws_credentails_key',
                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-                    ]]) {
-                            ansiblePlaybook(
-                                credentialsId: 'private_key',
-                                playbook: 'playbook_push.yml',
-                                inventory: 'hosts',
-                                become: 'yes',
-                                extraVars: [
-                                     AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}",  
-                                     AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}", 
-                                     DOCKER_IMAGE: "${DOCKER_IMAGE }",
-                                     AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }",
-                                     ECR_URL: "${ECR_URL }",
-                                     ECR_REPO: "${ECR_REPO}",
-                                     DOCKER_TAG: "${DOCKER_TAG}"
-                                ]
-                            )
-                    }               
+                ]]) {
+                        sh '''           
+                            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+                            aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URL
+                            docker push ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest
+                        '''
+                        }                              
+                //clean to save disk
+                sh "docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                sh "docker image rm ${ECR_URL}/${ECR_REPO}:${DOCKER_IMAGE}_latest"
                 
             }
         }     
-        
-                
-            
     }
+
+
+
+
+
     post {
         success {
             echo "SUCCESSFULL"
