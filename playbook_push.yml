@@ -3,13 +3,13 @@
   user: ubuntu
   tasks:   
     - name: Configure AWS ACCESS KEY ID
-      shell: aws configure set aws_access_key_id "{{AWS_ACCESS_KEY_ID}}"
+      command: aws configure set aws_access_key_id "{{AWS_ACCESS_KEY_ID}}"
 
     - name: Configure AWS SECRET ACCESS KEY 
-      shell: aws configure set aws_secret_access_key "{{AWS_SECRET_ACCESS_KEY}}"
+      command: aws configure set aws_secret_access_key "{{AWS_SECRET_ACCESS_KEY}}"
     
     - name: Get AWS ECR Login Command
-      shell: aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URL
+      command: aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URL
         
     - name: Push Docker Image to ECR
       command: docker push "{{ECR_URL}}/{{ECR_REPO}}:{{DOCKER_IMAGE}}_latest"
