@@ -1,7 +1,7 @@
 ---
 - hosts: 192.168.1.16
   vars:
-    ansible_python_interpreter: /usr/bin/python3
+    - ansible_python_interpreter: /usr/bin/python3
   tasks: 
     - name: Configure AWS ACCESS KEY ID
       shell: aws configure set aws_access_key_id "{{AWS_ACCESS_KEY_ID}}"
