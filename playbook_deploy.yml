@@ -17,9 +17,4 @@
         dest: /home/ubuntu/
 
     - name: Deploy the application to EKS
-      k8s:
-        definition: /home/ubuntu/my-app-deploy.yaml  
-        state: present
-      environment:
-        KUBECONFIG: /home/ubuntu/kubeconfig.yaml 
-      register: deployment_result
+      command: kubectl apply -f /home/ubuntu/my-app-deploy.yaml
