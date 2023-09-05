@@ -1,0 +1,23 @@
+---
+- hosts: 192.168.1.16
+  
+  tasks: 
+    - name: Configure AWS ACCESS KEY ID
+      shell: aws configure set aws_access_key_id "{{AWS_ACCESS_KEY_ID}}"
+
+    - name: Configure AWS SECRET ACCESS KEY 
+      shell: aws configure set aws_secret_access_key "{{AWS_SECRET_ACCESS_KEY}}"
+    
+    - name: Get AWS ECR Login 
+      shell: aws ecr get-login-password --region "{{AWS_DEFAULT_REGION}}" | docker login --username AWS --password-stdin "{{ECR_URL}}"         
+    
+    - name: Copy file
+      copy:
+        src: my-app-deploy.yaml
+        dest: /home/ubuntu/
+
+    - name: Deploy the application to EKS
+      k8s:
+        definition: /home/ubuntu/my-app-deploy.yaml  
+        state: present
+      

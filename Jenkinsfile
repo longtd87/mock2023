@@ -63,7 +63,7 @@ pipeline {
             }
         }
 
-         stage("PUSH IMAGE TO ECR"){
+        stage("PUSH IMAGE TO ECR"){
             options {
                 timeout(time: 5, unit: 'MINUTES')
             }
@@ -84,7 +84,7 @@ pipeline {
                                      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}", 
                                      DOCKER_IMAGE: "${DOCKER_IMAGE }",
                                      AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }",
-                                     ECR_URL: "${ECR_URL }",
+                                     ECR_URL: "${ECR_URL}",
                                      ECR_REPO: "${ECR_REPO}",
                                      DOCKER_TAG: "${DOCKER_TAG}"
                                 ]
@@ -92,7 +92,38 @@ pipeline {
                     }               
                 
             }
-        }                  
+        } 
+
+        stage("DEPLOY APP TO EKS"){
+            options {
+                timeout(time: 5, unit: 'MINUTES')
+            }
+            steps {                     
+                    withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws_credentails_key',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                            ansiblePlaybook(
+                                credentialsId: 'private_key',
+                                playbook: 'playbook_deploy.yml',
+                                inventory: 'hosts',
+                                become: 'yes',
+                                extraVars: [
+                                     AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}",  
+                                     AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}", 
+                                     AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }",
+                                     ECR_URL: "${ECR_URL}",
+                                     
+                                ]
+                            )
+                    }               
+                
+            }
+        } 
+
+
             
     }
     post {
