@@ -16,6 +16,12 @@
         src: my-app-deploy.yaml
         dest: /home/ubuntu/
 
+    - name: Delete old deployment
+      command: kubectl delete deploy my-app-deployment
+
+    - name: Delete old service 
+      commmand: kubectl delete svc my-app-service
+      
     - name: Deploy the application to EKS
       command: kubectl apply -f /home/ubuntu/my-app-deploy.yaml
       environment:
