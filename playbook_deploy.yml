@@ -18,3 +18,5 @@
 
     - name: Deploy the application to EKS
       command: kubectl apply -f /home/ubuntu/my-app-deploy.yaml
+      environment:
+        KUBECONFIG: /home/ubuntu/kubeconfig.yaml 
