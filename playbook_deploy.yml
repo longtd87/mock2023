@@ -22,3 +22,4 @@
         state: present
       environment:
         KUBECONFIG: /home/ubuntu/kubeconfig.yaml 
+      register: deployment_result
