@@ -22,7 +22,7 @@ pipeline {
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                     ]]) {
                             ansiblePlaybook(
-                                credentialsId: 'private_key',
+                                credentialsId: 'test_key',
                                 playbook: 'playbook_build.yml',
                                 inventory: 'hosts',
                                 become: 'yes',
