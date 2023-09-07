@@ -14,6 +14,9 @@
     - name: Get AWS ECR Login 
       shell: aws ecr get-login-password --region "{{AWS_DEFAULT_REGION}}" | docker login --username AWS --password-stdin "{{ECR_REPO}}"         
     
+    - name: Print container image
+      command: echo "{{container_image}}"
+
     - name: Generate Kubernetes Deployment Manifest
       template:
         src: my-deployment.yaml.j2
