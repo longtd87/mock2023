@@ -1,7 +1,6 @@
 pipeline {
     agent any
     environment{
-        
         AWS_DEFAULT_REGION = "us-east-1" 
         ECR_REPO = "541253215789.dkr.ecr.us-east-1.amazonaws.com/longtd27-mock"
         DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
@@ -22,7 +21,7 @@ pipeline {
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
                     ]]) {
                             ansiblePlaybook(
-                                credentialsId: 'test_key',
+                                credentialsId: 'private_key',
                                 playbook: 'playbook_build.yml',
                                 inventory: 'hosts',
                                 become: 'yes',
