@@ -1,6 +1,9 @@
 ---
 - hosts: 192.168.1.16
-  
+  vars:
+    app_name: my-app
+    container_image: "{{DOCKER_IMAGE}}"
+    replica_count: 1
   tasks: 
     - name: Configure AWS ACCESS KEY ID
       shell: aws configure set aws_access_key_id "{{AWS_ACCESS_KEY_ID}}"
@@ -11,10 +14,10 @@
     - name: Get AWS ECR Login 
       shell: aws ecr get-login-password --region "{{AWS_DEFAULT_REGION}}" | docker login --username AWS --password-stdin "{{ECR_URL}}"         
     
-    - name: Copy file
-      copy:
-        src: my-app-deploy.yaml
-        dest: /home/ubuntu/
+     name: Generate Kubernetes Deployment Manifest
+     template:
+        src: my-deployment.yaml.j2
+        dest: /home/ubuntu/my-app-deployment.yaml
         
     - name: Deploy the application to EKS
       command: kubectl apply -f /home/ubuntu/my-app-deploy.yaml
