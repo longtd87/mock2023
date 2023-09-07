@@ -6,9 +6,9 @@
       copy:
         src: Dockerfile
         dest: /home/ubuntu/
-    - name: Copy file
+    - name: Copy file web page
       copy:
-        src: index.html
+        src: web
         dest: /home/ubuntu/
 
     - name: Build Docker Image
