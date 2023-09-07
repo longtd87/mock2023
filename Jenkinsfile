@@ -27,7 +27,7 @@ pipeline {
                                 inventory: 'hosts',
                                 become: 'yes',
                                 extraVars: [
-                                    DOCKER_IMAGE: "${DOCKER_IMAGE }",
+                                    DOCKER_IMAGE: "${DOCKER_IMAGE}",
                                      
                                 ]
                             )
@@ -81,7 +81,9 @@ pipeline {
                                      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}",  
                                      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}", 
                                      DOCKER_IMAGE: "${DOCKER_IMAGE }",
-                                     AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }"
+                                     AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }",
+                                     ECR_REPO: "${ECR_REPO}"
+                                     
                                      
                                 ]
                             )
