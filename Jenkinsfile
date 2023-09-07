@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment{
-        DOCKER_IMAGE = "webapp"
+        DOCKER_IMAGE = "longapp"
         AWS_DEFAULT_REGION = "us-east-1" 
         ECR_URL = "541253215789.dkr.ecr.us-east-1.amazonaws.com"
         ECR_REPO = "longtd27-mock"
