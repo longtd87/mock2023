@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: my-app
-          image: 541253215789.dkr.ecr.us-east-1.amazonaws.com/longtd27-mock:longapp_latest
+          image: 541253215789.dkr.ecr.us-east-1.amazonaws.com/longtd27-mock:testapp_latest
 
 ---
 apiVersion: v1
