@@ -1,11 +1,11 @@
 pipeline {
     agent any
     environment{
-        DOCKER_IMAGE = "testapp"
+        
         AWS_DEFAULT_REGION = "us-east-1" 
-        ECR_URL = "541253215789.dkr.ecr.us-east-1.amazonaws.com"
-        ECR_REPO = "longtd27-mock"
+        ECR_REPO = "541253215789.dkr.ecr.us-east-1.amazonaws.com/longtd27-mock"
         DOCKER_TAG="${GIT_BRANCH.tokenize('/').pop()}-${GIT_COMMIT.substring(0,7)}"
+        DOCKER_IMAGE = "${ECR_REPO}:${DOCKER_TAG}"
         
     }
     stages {
@@ -27,10 +27,8 @@ pipeline {
                                 inventory: 'hosts',
                                 become: 'yes',
                                 extraVars: [
-                                     DOCKER_IMAGE: "${DOCKER_IMAGE }",
-                                     ECR_URL: "${ECR_URL }",
-                                     ECR_REPO: "${ECR_REPO}",
-                                     DOCKER_TAG: "${DOCKER_TAG}"
+                                    DOCKER_IMAGE: "${DOCKER_IMAGE }",
+                                     
                                 ]
                             )
                     }               
@@ -83,10 +81,8 @@ pipeline {
                                      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}",  
                                      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}", 
                                      DOCKER_IMAGE: "${DOCKER_IMAGE }",
-                                     AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }",
-                                     ECR_URL: "${ECR_URL}",
-                                     ECR_REPO: "${ECR_REPO}",
-                                     DOCKER_TAG: "${DOCKER_TAG}"
+                                     AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }"
+                                     
                                 ]
                             )
                     }               
@@ -114,7 +110,9 @@ pipeline {
                                      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}",  
                                      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}", 
                                      AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION }",
-                                     ECR_URL: "${ECR_URL}",
+                                     DOCKER_IMAGE: "${DOCKER_IMAGE}"
+
+                                     
                                      
                                 ]
                             )
